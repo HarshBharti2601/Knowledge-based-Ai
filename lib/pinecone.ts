@@ -1,4 +1,4 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+import { Pinecone, RecordMetadata } from '@pinecone-database/pinecone';
 
 if (!process.env.PINECONE_API_KEY) {
   throw new Error('PINECONE_API_KEY is not set');
@@ -19,12 +19,27 @@ export async function upsertVectors(vectors: Array<{
   values: number[];
   metadata: any;
 }>) {
-  const index = await getIndex();
-  await index.upsert(vectors);
+  if (!vectors || vectors.length === 0) {
+    throw new Error('No vectors provided to upsert');
+  }
+
+  console.log(`Attempting to upsert ${vectors.length} vectors to Pinecone...`);
+  
+  const index = pinecone.index<RecordMetadata>(indexName);
+  
+  try {
+    // Try direct upsert with proper typing
+    await index.upsert({records:vectors});
+    console.log('✓ Upsert successful');
+  } catch (error: any) {
+    console.error('Pinecone upsert error:', error);
+    throw error;
+  }
 }
 
 export async function queryVectors(embedding: number[], topK: number = 5) {
-  const index = await getIndex();
+  const index = pinecone.index<RecordMetadata>(indexName);
+  
   const results = await index.query({
     vector: embedding,
     topK,

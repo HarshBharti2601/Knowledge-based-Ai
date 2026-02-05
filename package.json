@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@huggingface/inference": "^4.13.11",
     "@pinecone-database/pinecone": "^7.0.0",
+    "cohere-ai": "^7.20.0",
     "next": "16.1.6",
     "openai": "^6.17.0",
     "react": "19.2.3",
