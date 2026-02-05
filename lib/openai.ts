@@ -27,10 +27,18 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       inputType: 'search_document',
     });
 
-    const embedding = response.embeddings[0];
-    console.log(`✓ Embedding generated: ${embedding.length} dimensions`);
+    const embeddings = response.embeddings;
     
-    return embedding;
+    if (Array.isArray(embeddings)) {
+      // Direct array format: number[][]
+      return embeddings[0] as number[];
+    } else if (embeddings && 'float' in embeddings) {
+      // Object format with float property
+      return (embeddings as any).float[0];
+    }
+    //console.log(`✓ Embedding generated: ${embedding.length} dimensions`);
+    throw new Error('Unexpected embeddings format from Cohere API');
+    
   } catch (error: any) {
     console.error('Cohere embedding error:', error);
     throw new Error(`Failed to generate embedding: ${error.message}`);

@@ -24,12 +24,21 @@ export async function POST(request: Request) {
       inputType: 'search_query', // Note: different from document type
     });
     
-    const queryEmbedding = queryEmbeddingResponse.embeddings[0];
+    const embeddings = queryEmbeddingResponse.embeddings;
+    let queryEmbedding: number[];
+    
+    if (Array.isArray(embeddings)) {
+      queryEmbedding = embeddings[0] as number[];
+    } else if (embeddings && 'float' in embeddings) {
+      queryEmbedding = (embeddings as any).float[0];
+    } else {
+      throw new Error('Failed to generate embeddings');
+    }
 
     console.log('Searching Pinecone...');
     const results = await queryVectors(queryEmbedding, 5);
 
-    if (results.length === 0) {
+    if (results.length === 0 || !results) {
       return NextResponse.json({
         answer: "I couldn't find any relevant information in my knowledge base.",
         sources: [],
@@ -37,16 +46,25 @@ export async function POST(request: Request) {
     }
 
     // Extract context and sources
-    const contexts = results.map(r => r.metadata?.text || '');
-    const sources = results.map(r => ({
-      title: r.metadata?.title || 'Unknown',
-      category: r.metadata?.category || 'General',
-      score: r.score || 0,
-      text: (r.metadata?.text || '').slice(0, 300),
-    }));
+    const contexts: string[] = results.map((r, i) => {
+      const metadata = r.metadata as Record<string, any>;
+      const title = typeof metadata.title === 'string' ? metadata.title : 'Unknown';
+      const text = typeof metadata.text === 'string' ? metadata.text : '';
+      return `Document: ${title}\nContent: ${text}`;
+    });
 
     console.log('Generating answer...');
     const answer = await generateAnswer(query, contexts);
+
+    const sources = results.map((r) => {
+      const metadata = r.metadata as Record<string, any>;
+      return {
+        title: typeof metadata.title === 'string' ? metadata.title : 'Unknown',
+        category: typeof metadata.category === 'string' ? metadata.category : 'General',
+        text: typeof metadata.text === 'string' ? metadata.text : '',
+        score: typeof r.score === 'number' ? r.score : 0,
+      };
+    });
 
     return NextResponse.json({
       answer,
