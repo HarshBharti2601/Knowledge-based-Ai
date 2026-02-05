@@ -68,7 +68,28 @@ export function Sidebar({
   };
 
   return (
-    <div className="relative flex h-full">
+    <div className="flex h-full">
+      {/* Collapse toggle button - always visible */}
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="absolute z-20 p-1.5 bg-card border border-border rounded-lg shadow-sm hover:bg-accent transition-colors"
+        style={{ left: isCollapsed ? 8 : width - 12, top: 72 }}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`w-4 h-4 text-foreground transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`}
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+
       <div
         ref={sidebarRef}
         style={{ width: isCollapsed ? 0 : width }}
@@ -169,25 +190,6 @@ export function Sidebar({
         />
       )}
 
-      {/* Collapse toggle button */}
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-6 z-10 p-1.5 bg-card border border-border rounded-full shadow-sm hover:bg-accent transition-colors"
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`w-4 h-4 text-foreground transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
-        >
-          <path d="m15 18-6-6 6-6" />
-        </svg>
-      </button>
     </div>
   );
 }
