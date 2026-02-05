@@ -26,6 +26,30 @@ A production-ready, AI-powered knowledge base assistant that indexes internal do
 
 ---
 
+## Screenshots
+
+### Light Mode Interface
+![Chat Interface - Light Mode](/screenshots/chat-interface-light.jpg)
+*Clean, modern chat interface with sidebar navigation and source-backed responses*
+
+### Dark Mode Interface
+![Chat Interface - Dark Mode](/screenshots/chat-interface-dark.jpg)
+*Full dark mode support with system preference detection*
+
+### Expandable Source Citations
+![Source Citations](/screenshots/source-citations.jpg)
+*Click-to-expand source cards showing document title, category, relevance score, and full text*
+
+### Chat History Sidebar
+![Sidebar with Chat History](/screenshots/sidebar-history.jpg)
+*Collapsible and resizable sidebar for managing multiple conversations*
+
+### Knowledge Base Indexing
+![Indexing Banner](/screenshots/indexing-banner.jpg)
+*One-click indexing of knowledge base documents with progress indicator*
+
+---
+
 ## Overview
 
 This project implements a Retrieval-Augmented Generation (RAG) system that enables users to query a knowledge base and receive AI-generated responses with cited sources. The system is designed to provide accurate, contextual answers while maintaining transparency through source attribution.
