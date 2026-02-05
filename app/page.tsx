@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -19,6 +19,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [indexing, setIndexing] = useState(false);
   const [indexed, setIndexed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleIndex = async () => {
     setIndexing(true);
@@ -82,7 +87,7 @@ export default function Home() {
           </p>
         </header>
 
-        {!indexed && (
+        {mounted && !indexed && (
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
             <div className="flex items-center justify-between">
               <div>
@@ -179,12 +184,12 @@ export default function Home() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask a question..."
-                disabled={!indexed || loading}
+                disabled={!mounted || !indexed || loading}
                 className="flex-1 rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-200"
               />
               <button
                 type="submit"
-                disabled={!indexed || loading || !input.trim()}
+                disabled={!mounted || !indexed || loading || !input.trim()}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 Send
