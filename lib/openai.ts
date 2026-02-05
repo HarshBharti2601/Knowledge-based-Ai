@@ -1,12 +1,18 @@
 import { CohereClient } from 'cohere-ai';
 
-if (!process.env.COHERE_API_KEY) {
-  throw new Error('COHERE_API_KEY is not set');
-}
+let cohereClient: CohereClient | null = null;
 
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY,
-});
+function getCohere(): CohereClient {
+  if (!process.env.COHERE_API_KEY) {
+    throw new Error('COHERE_API_KEY is not set. Please add it to your environment variables.');
+  }
+  if (!cohereClient) {
+    cohereClient = new CohereClient({
+      token: process.env.COHERE_API_KEY,
+    });
+  }
+  return cohereClient;
+}
 
 export async function generateEmbedding(text: string): Promise<number[]> {
   try {
@@ -15,7 +21,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     
     console.log('Generating embedding with Cohere...');
     
-    const response = await cohere.embed({
+    const response = await getCohere().embed({
       texts: [truncatedText],
       model: 'embed-english-v3.0',
       inputType: 'search_document',
@@ -50,7 +56,7 @@ Instructions:
 
 Answer:`;
 
-    const response = await cohere.generate({
+    const response = await getCohere().generate({
       prompt: prompt,
       model: 'command',
       maxTokens: 500,
