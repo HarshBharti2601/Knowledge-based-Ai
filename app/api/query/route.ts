@@ -24,10 +24,19 @@ export async function POST(request: Request) {
       inputType: 'search_query', // Note: different from document type
     });
     
-    const queryEmbedding = queryEmbeddingResponse.embeddings[0];
+    const embeddings = queryEmbeddingResponse.embeddings;
+    
+    // Handle both array and object response types from Cohere
+    const queryEmbedding = Array.isArray(embeddings) 
+      ? embeddings[0] 
+      : (embeddings as { float?: number[][] }).float?.[0];
+
+    if (!queryEmbedding) {
+      return NextResponse.json({ error: 'Failed to generate embedding' }, { status: 500 });
+    }
 
     console.log('Searching Pinecone...');
-    const results = await queryVectors(queryEmbedding, 5);
+    const results = await queryVectors(queryEmbedding as number[], 5);
 
     if (results.length === 0) {
       return NextResponse.json({

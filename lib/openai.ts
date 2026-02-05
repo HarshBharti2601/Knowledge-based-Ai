@@ -27,10 +27,20 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       inputType: 'search_document',
     });
 
-    const embedding = response.embeddings[0];
+    const embeddings = response.embeddings;
+    
+    // Handle both array and object response types from Cohere
+    const embedding = Array.isArray(embeddings) 
+      ? embeddings[0] 
+      : (embeddings as { float?: number[][] }).float?.[0];
+
+    if (!embedding) {
+      throw new Error('Failed to extract embedding from Cohere response');
+    }
+
     console.log(`✓ Embedding generated: ${embedding.length} dimensions`);
     
-    return embedding;
+    return embedding as number[];
   } catch (error: any) {
     console.error('Cohere embedding error:', error);
     throw new Error(`Failed to generate embedding: ${error.message}`);
