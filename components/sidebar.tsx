@@ -72,8 +72,8 @@ export function Sidebar({
       {/* Collapse toggle button - always visible */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute left-2 top-4 z-20 p-1.5 bg-card border border-border rounded-lg shadow-sm hover:bg-accent transition-colors"
-        style={{ left: isCollapsed ? 8 : width - 12 }}
+        className="absolute z-20 p-1.5 bg-card border border-border rounded-lg shadow-sm hover:bg-accent transition-colors"
+        style={{ left: isCollapsed ? 8 : width - 12, top: 72 }}
         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         <svg
