@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from '@/components/sidebar';
 import { Header } from '@/components/header';
 import { ChatArea } from '@/components/chat-area';
+import { SourcePanel } from '@/components/SourcePanel';
 import type { Message, ChatSession } from '@/lib/types';
 
 export default function Home() {
@@ -14,6 +15,11 @@ export default function Home() {
   const [indexing, setIndexing] = useState(false);
   const [indexed, setIndexed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
+  // Source panel state
+  const [showSourcePanel, setShowSourcePanel] = useState(false);
+  const [selectedSource, setSelectedSource] = useState<any>(null);
+  const [activeSources, setActiveSources] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -95,6 +101,13 @@ export default function Home() {
     });
   };
 
+  // Handler for clicking a source
+  const handleSourceClick = useCallback((source: any, allSources: any[]) => {
+    setSelectedSource(source);
+    setActiveSources(allSources);
+    setShowSourcePanel(true);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -163,6 +176,13 @@ export default function Home() {
           return chat;
         })
       );
+
+      // Auto-open source panel if sources exist
+      if (data.sources && data.sources.length > 0) {
+        setActiveSources(data.sources);
+        setSelectedSource(data.sources[0]);
+        setShowSourcePanel(true);
+      }
     } catch (error) {
       setChats((prev) =>
         prev.map((chat) => {
@@ -209,7 +229,18 @@ export default function Home() {
           setInput={setInput}
           onSubmit={handleSubmit}
           disabled={!indexed}
+          onSourceClick={handleSourceClick}
         />
+        
+        {/* Source Panel */}
+        {showSourcePanel && (
+          <SourcePanel
+            source={selectedSource}
+            sources={activeSources}
+            onClose={() => setShowSourcePanel(false)}
+            onSelectSource={setSelectedSource}
+          />
+        )}
       </div>
     </div>
   );

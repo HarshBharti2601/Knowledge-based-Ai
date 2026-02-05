@@ -9,6 +9,7 @@ type ChatAreaProps = {
   setInput: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   disabled: boolean;
+  onSourceClick: (source: any, allSources: any[]) => void;
 };
 
 export function ChatArea({
@@ -18,6 +19,7 @@ export function ChatArea({
   setInput,
   onSubmit,
   disabled,
+  onSourceClick,
 }: ChatAreaProps) {
   return (
     <div className="flex-1 flex flex-col bg-background overflow-hidden">
