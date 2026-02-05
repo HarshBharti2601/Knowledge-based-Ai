@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { Message } from '@/lib/types';
 
 type ChatAreaProps = {
@@ -83,30 +84,7 @@ export function ChatArea({
               </div>
 
               {msg.sources && msg.sources.length > 0 && (
-                <div className="mt-2 ml-2 space-y-2">
-                  <p className="text-xs font-semibold text-muted-foreground">
-                    Sources:
-                  </p>
-                  {msg.sources.slice(0, 3).map((source, i) => (
-                    <div
-                      key={i}
-                      className="bg-accent/50 border-l-4 border-primary p-3 text-sm rounded"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="font-semibold text-foreground">{source.title}</p>
-                        <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
-                          {source.category}
-                        </span>
-                      </div>
-                      <p className="text-muted-foreground text-xs line-clamp-2">
-                        {source.text}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Relevance: {(source.score * 100).toFixed(1)}%
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <SourcesList sources={msg.sources} />
               )}
             </div>
           ))
@@ -161,6 +139,90 @@ export function ChatArea({
           </button>
         </div>
       </form>
+    </div>
+  );
+}
+
+// Expandable sources component
+function SourcesList({ sources }: { sources: Message['sources'] }) {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  if (!sources) return null;
+
+  return (
+    <div className="mt-3 ml-2 space-y-2">
+      <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="w-3 h-3"
+        >
+          <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+        </svg>
+        Sources ({sources.length})
+      </p>
+      {sources.slice(0, 3).map((source, i) => (
+        <button
+          key={i}
+          onClick={() => setExpandedIndex(expandedIndex === i ? null : i)}
+          className="w-full text-left bg-accent/50 hover:bg-accent border border-border rounded-lg p-3 transition-colors cursor-pointer group"
+        >
+          <div className="flex items-center justify-between mb-1">
+            <p className="font-medium text-sm text-foreground group-hover:text-primary transition-colors">
+              {source.title}
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                {source.category}
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                  expandedIndex === i ? 'rotate-180' : ''
+                }`}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3 h-3"
+              >
+                <path d="M12 20h9" />
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+              </svg>
+              Relevance: {(source.score * 100).toFixed(0)}%
+            </span>
+          </div>
+          {expandedIndex === i && (
+            <div className="mt-3 pt-3 border-t border-border">
+              <p className="text-sm text-foreground whitespace-pre-wrap">
+                {source.text}
+              </p>
+            </div>
+          )}
+        </button>
+      ))}
     </div>
   );
 }
